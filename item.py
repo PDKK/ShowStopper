@@ -9,7 +9,7 @@ from gi.repository.GdkPixbuf import Pixbuf, InterpType
 gladefile = os.path.join(os.path.dirname(__file__), "item.glade")
 
 
-class item(object):
+class Item(object):
 
     def __init__(self):
         self.builder = Gtk.Builder()

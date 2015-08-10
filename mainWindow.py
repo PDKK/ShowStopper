@@ -24,11 +24,11 @@ class mainWindow(object):
             "on_mainWindow_delete_event": Gtk.main_quit,
         }
         self.builder.connect_signals(self.mainhandlers)
-        item1 = item.item()
+        item1 = item.Item()
         self.leftPanel.add(item1.view)
-        item2 = item.item()
+        item2 = item.Item()
         self.leftPanel.add(item2.view)
-        item3 = item.item()
+        item3 = item.Item()
         self.leftPanel.add(item3.view)
         self.leftPanel.select_row(item3.view)
         self.window.show_all()
