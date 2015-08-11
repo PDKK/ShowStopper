@@ -6,7 +6,8 @@ import os
 from gi.repository import Gtk
 from gi.repository.GdkPixbuf import Pixbuf, InterpType
 
-gladefile = os.path.join(os.path.dirname(__file__), "item.glade")
+gladefile = os.path.join(os.path.dirname(__file__), "glade/item.glade")
+ledfile = os.path.join(os.path.dirname(__file__), "images/green_led.png")
 
 
 class Item(object):
@@ -22,7 +23,7 @@ class Item(object):
             #"on_mainWindow_delete_event": Gtk.main_quit,
         }
         self.builder.connect_signals(self.mainhandlers)
-        pixbuf = Pixbuf.new_from_file("green_led.png")
+        pixbuf = Pixbuf.new_from_file(ledfile)
         pixbuf = pixbuf.scale_simple(32, 32, InterpType.BILINEAR)
         self.builder.get_object("image1").set_from_pixbuf(pixbuf)
 

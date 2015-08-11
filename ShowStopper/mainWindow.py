@@ -2,10 +2,10 @@
 import os
 
 from gi.repository import Gtk
-import item
-import model
+from ShowStopper import item
+from ShowStopper import model
 
-gladefile = os.path.join(os.path.dirname(__file__), "main.glade")
+gladefile = os.path.join(os.path.dirname(__file__), "glade/main.glade")
 
 
 class mainWindow(object):
