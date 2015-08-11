@@ -25,19 +25,15 @@ gst.element_factory_make => gst.ElementFactory.make
 '''
 audio_source = gst.ElementFactory.make('filesrc', 'audio_source')
 decode = gst.ElementFactory.make('mad', 'decode')
-convert = gst.ElementFactory.make('audioconvert', 'convert')
-equalizer = gst.ElementFactory.make('equalizer-3bands', 'equalizer')
 audio_sink = gst.ElementFactory.make('autoaudiosink', 'audio_sink')
 
 # Ensure all elements were created successfully.
-if (not pipeline or not audio_source or not decode or not convert or not equalizer or not audio_sink):
+if (not pipeline or not audio_source or not decode or not audio_sink):
     print('Not all elements could be created.')
     exit(-1)
 
 # Configure our elements.
 audio_source.set_property('location', '1.mp3')
-equalizer.set_property('band1', -2.0)
-equalizer.set_property('band2', -2.0)
 
 # Add our elements to the pipeline.
 '''
@@ -47,8 +43,6 @@ them on by one and ordering counts.
 '''
 pipeline.add(audio_source)
 pipeline.add(decode)
-pipeline.add(convert)
-pipeline.add(equalizer)
 pipeline.add(audio_sink)
 
 # Link our elements together.
@@ -58,9 +52,7 @@ gst.element_link_many(audio_source, decode, convert, equalizer, audio_sink)):
 you need to use link() which links two parameter.
 '''
 audio_source.link(decode)
-decode.link(convert)
-convert.link(equalizer)
-equalizer.link(audio_sink)
+decode.link(audio_sink)
 
 # Set our pipelines state to Playing.
 '''
