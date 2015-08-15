@@ -36,6 +36,7 @@ setup(
     package_dir={'ShowStopper':
                  'ShowStopper'},
     include_package_data=True,
+    package_data={'ShowStopper':['images/*.png']},
     install_requires=requirements,
     entry_points={
 	    'gui_scripts': [
