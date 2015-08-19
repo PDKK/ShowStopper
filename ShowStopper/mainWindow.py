@@ -32,7 +32,6 @@ class mainWindow(object):
         self.leftPanel.add(item3.view)
         self.leftPanel.select_row(item3.view)
         self.window.show_all()
-        Gtk.main()
 
     def on_btn_next(self, obj):
         print("Next")
