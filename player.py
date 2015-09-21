@@ -2,8 +2,10 @@
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
-from gi.repository import GObject,Gtk
+gi.require_version('GstController', '1.0')
+# from gi.repository import GObject,Gtk
 from gi.repository import Gst as gst
+from gi.repository import GstController
 import time
 import threading
 
@@ -42,6 +44,13 @@ class player(object):
         self.volume.set_property('volume', 1.0)
         self.current_volume = 100
 
+        self.cs = GstController.InterpolationControlSource.new()
+        self.cs.set_property('mode', GstController.InterpolationMode.LINEAR)
+        self.cb = GstController.DirectControlBinding.new(self.volume, 'volume', self.cs)
+        self.volume.add_control_binding(self.cb)
+        self.cs.set(0 * gst.SECOND, 0.15)
+
+
     def set_source(self, source):
         self.audio_source.set_property('location', source)
 
@@ -58,16 +67,18 @@ class player(object):
             time.sleep(0.1)
 
     def fade_out(self):
-        threading.Thread(target=self.fade_out_work).start()
+        current = self.pipeline.get_clock().get_time()
+        self.cs.set(current, 0.15)
+        self.cs.set(current + 1 * gst.SECOND, 0.0)
 
     def unused_bus_code(self):
         # Wait until error or EOS.
-        bus = pipeline.get_bus()
+        bus = self.pipeline.get_bus()
         msg = bus.timed_pop_filtered(gst.CLOCK_TIME_NONE,gst.MessageType.ERROR | gst.MessageType.EOS)
         print (msg)
 
         # Free resources.
-        pipeline.set_state(gst.State.NULL)
+        self.pipeline.set_state(gst.State.NULL)
 
 if __name__=="__main__":
     p1 = player()
@@ -75,5 +86,5 @@ if __name__=="__main__":
     p1.play()
     time.sleep(5)
     p1.fade_out()
-    time.sleep(2)
+    time.sleep(3)
 
