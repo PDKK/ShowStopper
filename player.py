@@ -22,7 +22,8 @@ class player(object):
         # Create the elements for our project.
 
         self.audio_source = gst.ElementFactory.make('filesrc', 'audio_source')
-        self.decode = gst.ElementFactory.make('mad', 'decode')
+        self.decode = gst.ElementFactory.make('decodebin', 'decode')
+        self.decode.connect("pad-added", self.on_dynamic_pad)
         self.volume = gst.ElementFactory.make('volume', 'volume')
         self.audio_sink = gst.ElementFactory.make('autoaudiosink', 'audio_sink')
 
@@ -41,8 +42,6 @@ class player(object):
         self.audio_source.link(self.decode)
         self.decode.link(self.volume)
         self.volume.link(self.audio_sink)
-        self.volume.set_property('volume', 1.0)
-        self.current_volume = 100
 
         self.cs = GstController.InterpolationControlSource.new()
         self.cs.set_property('mode', GstController.InterpolationMode.LINEAR)
@@ -72,6 +71,10 @@ class player(object):
 
         # Free resources.
         self.pipeline.set_state(gst.State.NULL)
+
+    def on_dynamic_pad(self, element, pad):
+        print ("OnDynamicPad Called!")
+        pad.link(self.volume.get_static_pad("sink"))
 
 if __name__=="__main__":
     p1 = player()
