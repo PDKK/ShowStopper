@@ -2,8 +2,8 @@
 import os
 
 from gi.repository import Gtk
-from ShowStopper import item
-from ShowStopper import model
+import item
+import model
 
 gladefile = os.path.join(os.path.dirname(__file__), "glade/main.glade")
 

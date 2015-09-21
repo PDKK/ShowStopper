@@ -1,3 +1,13 @@
-from ShowStopper import ShowStopper
+# -*- coding: utf-8 -*-
+import mainWindow
+from gi.repository import Gtk
 
-ShowStopper.main()
+def main():
+	m = mainWindow.mainWindow()
+	Gtk.main()
+
+
+
+if __name__ == "__main__":
+	main()
+
