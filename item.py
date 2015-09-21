@@ -29,3 +29,8 @@ class Item(object):
 
         #self.window.show_all()
         #Gtk.main()
+
+    def get_filename(self):
+        fname = self.builder.get_object("filechooserbutton1").get_filename()
+        print(fname)
+        return fname

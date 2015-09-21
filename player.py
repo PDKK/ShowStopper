@@ -48,7 +48,6 @@ class player(object):
         self.cs.set_property('mode', GstController.InterpolationMode.LINEAR)
         self.cb = GstController.DirectControlBinding.new(self.volume, 'volume', self.cs)
         self.volume.add_control_binding(self.cb)
-        self.cs.set(0 * gst.SECOND, 0.15)
 
 
     def set_source(self, source):
@@ -60,16 +59,10 @@ class player(object):
     def stop(self):
         self.pipeline.set_state(gst.State.READY)
 
-    def fade_out_work(self):
-        while (self.current_volume > 0):
-            self.current_volume -= 10
-            self.volume.set_property('volume', self.current_volume / 100.0)
-            time.sleep(0.1)
-
     def fade_out(self):
         current = self.pipeline.get_clock().get_time()
         self.cs.set(current, 0.15)
-        self.cs.set(current + 1 * gst.SECOND, 0.0)
+        self.cs.set(current + 3 * gst.SECOND, 0.0)
 
     def unused_bus_code(self):
         # Wait until error or EOS.
@@ -82,9 +75,9 @@ class player(object):
 
 if __name__=="__main__":
     p1 = player()
-    p1.set_source("knight.mp3")
+    p1.set_source("1.mp3")
     p1.play()
     time.sleep(5)
     p1.fade_out()
-    time.sleep(3)
+    time.sleep(4)
 

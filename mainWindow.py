@@ -4,11 +4,16 @@ import os
 from gi.repository import Gtk
 import item
 import model
+import player
+
 
 gladefile = os.path.join(os.path.dirname(__file__), "glade/main.glade")
 
 
 class mainWindow(object):
+    items = []
+    currentItem = 0;
+    player1 = player.player()
 
     def __init__(self):
         self.builder = Gtk.Builder()
@@ -24,24 +29,31 @@ class mainWindow(object):
             "on_mainWindow_delete_event": Gtk.main_quit,
         }
         self.builder.connect_signals(self.mainhandlers)
-        item1 = item.Item()
-        self.leftPanel.add(item1.view)
-        item2 = item.Item()
-        self.leftPanel.add(item2.view)
-        item3 = item.Item()
-        self.leftPanel.add(item3.view)
-        self.leftPanel.select_row(item3.view)
+        self.items.append(item.Item())
+        self.leftPanel.add(self.items[len(self.items) - 1].view)
+        self.items.append(item.Item())
+        self.leftPanel.add(self.items[len(self.items) - 1].view)
+        self.items.append(item.Item())
+        self.leftPanel.add(self.items[len(self.items) - 1].view)
+        self.leftPanel.select_row(self.items[2].view)
         self.window.show_all()
 
     def on_btn_next(self, obj):
         print("Next")
-        self.leftPanel.select_row(self.leftPanel.get_selected_row()+1)
+        self.currentItem += 1
+        print(self.currentItem)
+        self.leftPanel.select_row(self.items[self.currentItem].view)
 
     def on_btn_prev(self, obj):
         print("Prev")
+        self.currentItem -= 1
+        print(self.currentItem)
+        self.leftPanel.select_row(self.items[self.currentItem].view)
 
     def on_btn_play(self, obj):
-        print("Play")
+        print("Play" + self.items[self.currentItem].get_filename())
+        self.player1.set_source(self.items[self.currentItem].get_filename())
+        self.player1.play()
 
     def on_file_open(self, obj):
         print("Open")
