@@ -31,6 +31,7 @@ class mainWindow(object):
         self.builder.connect_signals(self.mainhandlers)
         self.items.append(item.Item())
         self.leftPanel.add(self.items[len(self.items) - 1].view)
+	self.items[len(self.items) - 1].connect("my_signal", self.on_item_signal)
         self.items.append(item.Item())
         self.leftPanel.add(self.items[len(self.items) - 1].view)
         self.items.append(item.Item())
@@ -54,6 +55,9 @@ class mainWindow(object):
         print("Play" + self.items[self.currentItem].get_filename())
         self.player1.set_source(self.items[self.currentItem].get_filename())
         self.player1.play()
+
+    def on_item_signal(self, orig, pos):
+        print("on_item_signal", pos)
 
     def on_file_open(self, obj):
         print("Open")

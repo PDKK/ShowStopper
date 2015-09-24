@@ -4,15 +4,21 @@ __author__ = 'pknox-kennedy'
 import os
 
 from gi.repository import Gtk
+from gi.repository import GObject
 from gi.repository.GdkPixbuf import Pixbuf, InterpType
 
 gladefile = os.path.join(os.path.dirname(__file__), "glade/item.glade")
 ledfile = os.path.join(os.path.dirname(__file__), "images/green_led.png")
 
 
-class Item(object):
+class Item(GObject.GObject):
+    __gsignals__ = {
+        'my_signal': (GObject.SIGNAL_RUN_FIRST, None,
+                      (int,))
+    }
 
     def __init__(self):
+        GObject.GObject.__init__(self)
         self.builder = Gtk.Builder()
         self.builder.add_from_file(gladefile)
         self.view = Gtk.ListBoxRow()
@@ -37,7 +43,7 @@ class Item(object):
         return fname
 
     def on_slider_seek(self, pos):
-        print("seek", self._scale.get_value())
+	self.emit("my_signal", self._scale.get_value())
 
     def set_slider(self, pos, slider_range):
         # block seek handler so we don't seek when we set_value()
