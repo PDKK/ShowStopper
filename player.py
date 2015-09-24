@@ -79,7 +79,7 @@ class player(object):
     def fade_out(self):
         current = self._pipeline.get_clock().get_time()
         self._volume_control_source.set(current, 0.15)
-        self._volume_control_source.set(current + 3 * gst.SECOND, 0.0)
+        self._volume_control_source.set(current + 8 * gst.SECOND, 0.0)
 
     def pan(self, start, end, duration):
         current = self._pipeline.get_clock().get_time()
@@ -98,22 +98,43 @@ class player(object):
     def on_dynamic_pad(self, element, pad):
         print ("OnDynamicPad Called!")
         pad.link(self._volume.get_static_pad("sink"))
+        print(self.get_duration())
+
+    def get_duration(self):
+        success, duration = self._decode.query_duration(gst.Format.TIME)
+        if not success:
+            duration = -1
+        else:
+            duration /= gst.SECOND
+        return duration
+
+    def get_position(self):
+        success, position = self._decode.query_position(gst.Format.TIME)
+        if not success:
+            position = -1
+        else:
+            position /= gst.SECOND
+        return position
 
 if __name__=="__main__":
     p1 = player()
+    p2 = player()
     p1.set_source("1.mp3")
+    p2.set_source("chime.wav")
     p1.play()
     time.sleep(15)
+    print("position", p1.get_position(), "duration", p1.get_duration())
     print ("Pan to -1")
     p1.pan(0.5,0,5)
     time.sleep(5)
     print ("Pan to 1")
     p1.pan(0,1,5)
+    p2.play()
     time.sleep(5)
     print ("Pan to 0")
     p1.pan(1,0.5,5)
     time.sleep(5)
     print ("Fade out")
     p1.fade_out()
-    time.sleep(4)
+    time.sleep(9)
 
