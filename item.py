@@ -26,7 +26,8 @@ class Item(object):
         pixbuf = Pixbuf.new_from_file(ledfile)
         pixbuf = pixbuf.scale_simple(32, 32, InterpType.BILINEAR)
         self.builder.get_object("image1").set_from_pixbuf(pixbuf)
-
+        self._scale = self.builder.get_object("scale1")
+        self._scale_change_id =  self._scale.connect("value-changed", self.on_slider_seek)
         #self.window.show_all()
         #Gtk.main()
 
@@ -34,3 +35,15 @@ class Item(object):
         fname = self.builder.get_object("filechooserbutton1").get_filename()
         print(fname)
         return fname
+
+    def on_slider_seek(self, pos):
+        print("seek", self._scale.get_value())
+
+    def set_slider(self, pos, slider_range):
+        # block seek handler so we don't seek when we set_value()
+        self._scale.handler_block(self._scale_change_id)
+
+        self._scale.set_range(0, slider_range)
+        self._scale.set_value(pos)
+
+        self._scale.handler_unblock(self._scale_change_id)
