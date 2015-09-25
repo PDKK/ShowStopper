@@ -43,7 +43,7 @@ class Item(GObject.GObject):
         return fname
 
     def on_slider_seek(self, pos):
-	self.emit("my_signal", self._scale.get_value())
+        self.emit("my_signal", self._scale.get_value())
 
     def set_slider(self, pos, slider_range):
         # block seek handler so we don't seek when we set_value()

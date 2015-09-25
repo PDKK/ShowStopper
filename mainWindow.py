@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import os
-
+import os, gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import item
 import model
@@ -13,7 +13,7 @@ gladefile = os.path.join(os.path.dirname(__file__), "glade/main.glade")
 class mainWindow(object):
     items = []
     currentItem = 0;
-    player1 = player.player()
+    player1 = player.Player()
 
     def __init__(self):
         self.builder = Gtk.Builder()
@@ -31,7 +31,7 @@ class mainWindow(object):
         self.builder.connect_signals(self.mainhandlers)
         self.items.append(item.Item())
         self.leftPanel.add(self.items[len(self.items) - 1].view)
-	self.items[len(self.items) - 1].connect("my_signal", self.on_item_signal)
+        self.items[len(self.items) - 1].connect("my_signal", self.on_item_signal)
         self.items.append(item.Item())
         self.leftPanel.add(self.items[len(self.items) - 1].view)
         self.items.append(item.Item())

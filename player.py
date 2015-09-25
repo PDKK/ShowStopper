@@ -1,5 +1,5 @@
-
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('GstController', '1.0')
@@ -13,8 +13,21 @@ import threading
 gst.init(None)
 
 
-class player(object):
+def getAudioLength(name):
+    # Simple gstreamer pipeline going to fakesink
+    d = gst.parse_launch("filesrc name=source ! decodebin name=decode ! fakesink")
+    source = d.get_by_name("source")
+    source.set_property("location", name)
+    d.set_state(gst.State.PLAYING)
+    # Set state will give us an async return. Get state with timeout
+    # waits until we reach the playing state. Note that this timeout
+    # is in nanoseconds
+    d.get_state(1 * gst.SECOND)
+    success, duration = d.query_duration(gst.Format.TIME)
+    d.set_state(gst.State.NULL)
+    return duration / gst.SECOND
 
+class Player(object):
     def __init__(self):
 
         # Create the pipeline for our elements.
@@ -30,13 +43,13 @@ class player(object):
         self._audio_sink = gst.ElementFactory.make('autoaudiosink', 'audio_sink')
 
         # Ensure all elements were created successfully.
-        if (not self._pipeline \
-			or not self._audio_source \
-			or not self._decode \
-			or not self._pan \
-			or not self._convert \
-			or not self._audio_sink \
-			or not self._volume):
+        if (not self._pipeline
+            or not self._audio_source
+            or not self._decode
+            or not self._pan
+            or not self._convert
+            or not self._audio_sink
+            or not self._volume):
             print('Not all elements could be created.')
             exit(-1)
 
@@ -58,14 +71,15 @@ class player(object):
 
         self._volume_control_source = GstController.InterpolationControlSource.new()
         self._volume_control_source.set_property('mode', GstController.InterpolationMode.LINEAR)
-        self._volume_control_binding = GstController.DirectControlBinding.new(self._volume, 'volume', self._volume_control_source)
+        self._volume_control_binding = GstController.DirectControlBinding.new(self._volume, 'volume',
+                                                                              self._volume_control_source)
         self._volume.add_control_binding(self._volume_control_binding)
 
         self._pan_control_source = GstController.InterpolationControlSource.new()
         self._pan_control_source.set_property('mode', GstController.InterpolationMode.LINEAR)
-        self._pan_control_binding = GstController.DirectControlBinding.new(self._pan, 'panorama', self._pan_control_source)
+        self._pan_control_binding = GstController.DirectControlBinding.new(self._pan, 'panorama',
+                                                                           self._pan_control_source)
         self._pan.add_control_binding(self._pan_control_binding)
-	
 
     def set_source(self, source):
         self._audio_source.set_property('location', source)
@@ -89,14 +103,14 @@ class player(object):
     def unused_bus_code(self):
         # Wait until error or EOS.
         bus = self._pipeline.get_bus()
-        msg = bus.timed_pop_filtered(gst.CLOCK_TIME_NONE,gst.MessageType.ERROR | gst.MessageType.EOS)
-        print (msg)
+        msg = bus.timed_pop_filtered(gst.CLOCK_TIME_NONE, gst.MessageType.ERROR | gst.MessageType.EOS)
+        print(msg)
 
         # Free resources.
         self._pipeline.set_state(gst.State.NULL)
 
     def on_dynamic_pad(self, element, pad):
-        print ("OnDynamicPad Called!")
+        print("OnDynamicPad Called!")
         pad.link(self._volume.get_static_pad("sink"))
         print(self.get_duration())
 
@@ -116,25 +130,28 @@ class player(object):
             position /= gst.SECOND
         return position
 
-if __name__=="__main__":
-    p1 = player()
-    p2 = player()
+
+if __name__ == "__main__":
+    print("File 1.mp3, duration",getAudioLength("1.mp3"))
+    p1 = Player()
+    p2 = Player()
     p1.set_source("1.mp3")
     p2.set_source("chime.wav")
     p1.play()
     time.sleep(15)
     print("position", p1.get_position(), "duration", p1.get_duration())
-    print ("Pan to -1")
-    p1.pan(0.5,0,5)
+    print("Pan to -1")
+    p1.pan(0.5, 0, 5)
     time.sleep(5)
-    print ("Pan to 1")
-    p1.pan(0,1,5)
+    print("Pan to 1")
+    p1.pan(0, 1, 5)
     p2.play()
     time.sleep(5)
-    print ("Pan to 0")
-    p1.pan(1,0.5,5)
+    print("Pan to 0")
+    p1.pan(1, 0.5, 5)
     time.sleep(5)
-    print ("Fade out")
+    print("Fade out")
     p1.fade_out()
     time.sleep(9)
+    getAudioLength("1.mp3")
 
