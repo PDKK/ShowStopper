@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import os, gi
+import os
+import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import item
@@ -25,7 +26,7 @@ class mainWindow(object):
             "on_btn_prev_clicked": self.on_btn_prev,
             "on_btn_play_clicked": self.on_btn_play,
             "on_file_open": self.on_file_open,
-            #"on_cancelBtn_clicked": Gtk.main_quit,
+            # "on_cancelBtn_clicked": Gtk.main_quit,
             "on_mainWindow_delete_event": Gtk.main_quit,
         }
         self.builder.connect_signals(self.mainhandlers)
